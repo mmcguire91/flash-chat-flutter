@@ -4,7 +4,7 @@ import 'registration_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const String id = 'welcome_screen';
-
+//need to add animation
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
