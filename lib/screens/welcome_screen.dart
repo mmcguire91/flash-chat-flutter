@@ -4,16 +4,45 @@ import 'registration_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const String id = 'welcome_screen';
-//06/26 road trip
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  Animation animation;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      vsync: this, //current class _WelcomeScreenState
+      duration: Duration(seconds: 2),
+    );
+
+    animation = ColorTween(begin: Colors.blueGrey, end: Colors.white)
+        .animate(controller); // change the color on app start
+
+    controller.forward(); //proceed animation forward
+
+    controller.addListener(() {
+      setState(() {});
+      print(controller.value); //print the progress of the animation
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose(); //end animation to not drain app resources
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor:
+          animation.value, //set background color to the animation value
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
