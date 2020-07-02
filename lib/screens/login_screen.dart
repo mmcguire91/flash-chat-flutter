@@ -38,9 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               decoration: kTextFieldDecoration.copyWith(
                 hintText: 'Email',
-                hintStyle: TextStyle(
-                  color: Colors.grey[700],
-                ),
               ),
             ),
             SizedBox(
@@ -53,9 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               decoration: kTextFieldDecoration.copyWith(
                 hintText: 'Password',
-                hintStyle: TextStyle(
-                  color: Colors.grey[700],
-                ),
               ),
             ),
             SizedBox(
