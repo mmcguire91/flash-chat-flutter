@@ -1,6 +1,7 @@
+import 'package:flash_chat/constants.dart';
 import 'package:flash_chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
-import '../components/login_textfield.dart';
+import '../components/rounded_button.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
@@ -30,36 +31,43 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(
               height: 48.0,
             ),
-            LoginField(
-              hintTextEntry: 'Email',
+            //Email
+            TextField(
+              onChanged: (value) {
+                //Do something with the user input.
+              },
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: 'Email',
+                hintStyle: TextStyle(
+                  color: Colors.grey[700],
+                ),
+              ),
             ),
             SizedBox(
               height: 8.0,
             ),
-            LoginField(
-              hintTextEntry: 'Password',
+            //Password
+            TextField(
+              onChanged: (value) {
+                //Do something with the user input.
+              },
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: 'Password',
+                hintStyle: TextStyle(
+                  color: Colors.grey[700],
+                ),
+              ),
             ),
             SizedBox(
               height: 24.0,
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Material(
-                color: Colors.lightBlueAccent,
-                borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                elevation: 5.0,
-                child: MaterialButton(
-                  onPressed: () {
-                    //Implement login functionality.
-                    Navigator.pushNamed(context, ChatScreen.id);
-                  },
-                  minWidth: 200.0,
-                  height: 42.0,
-                  child: Text(
-                    'Log In',
-                  ),
-                ),
-              ),
+            RoundedButton(
+              buttonColor: Colors.lightBlueAccent,
+              buttonText: 'Login',
+              onPressed: () {
+                //Implement login functionality.
+                Navigator.pushNamed(context, ChatScreen.id);
+              },
             ),
           ],
         ),
