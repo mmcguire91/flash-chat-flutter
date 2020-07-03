@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'chat_screen.dart';
 import '../components/rounded_button.dart';
 import 'package:flash_chat/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_awesome_alert_box/flutter_awesome_alert_box.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String id = 'registration_screen';
@@ -11,6 +13,9 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  final _auth = FirebaseAuth.instance;
+  String email;
+  String password;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +29,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             Hero(
               tag: 'logo',
               child: Container(
-                height: 200.0,
+                height: 145.0,
                 child: Image.asset('images/logo.png'),
               ),
             ),
@@ -33,8 +38,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ),
             //Email
             TextField(
+              keyboardType: TextInputType
+                  .emailAddress, //display specialty keyboard for entering email address
               onChanged: (value) {
                 //Do something with the user input.
+                email =
+                    value; //store the entry value of the email field as the variable email
               },
               decoration: kTextFieldDecoration.copyWith(
                 hintText: 'Email',
@@ -45,8 +54,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ),
             //Password
             TextField(
+              obscureText: true, //hide the values that the user enters
               onChanged: (value) {
                 //Do something with the user input.
+                password =
+                    value; //store the entry value of the password field as the variable password
               },
               decoration: kTextFieldDecoration.copyWith(
                 hintText: 'Password',
@@ -58,9 +70,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             RoundedButton(
               buttonColor: Colors.blueAccent,
               buttonText: 'Register',
-              onPressed: () {
-                //Implement registration functionality.
-                Navigator.pushNamed(context, ChatScreen.id);
+              onPressed: () async {
+                try {
+                  final newUser = await _auth.createUserWithEmailAndPassword(
+                      email: email.trim(), password: password);
+                  //_auth.createUserWithEmailAndPassword defines a future value. Stored as final newUser
+                  //async & await because it is a future value we want to make sure the future value (the new user is created) before proceeding
+                  if (newUser != null) {
+                    Navigator.pushNamed(context, ChatScreen.id);
+                    //if the newUser value is not empty proceed to the chat view
+                  } else if (password = null) {}
+                } catch (e) {
+                  print(e);
+                  WarningAlertBoxCenter(
+                    context: context,
+                    messageText:
+                        'Something went wrong. Password must be at least 6 characters',
+                  );
+                }
               },
             ),
           ],

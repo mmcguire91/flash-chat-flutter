@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Hero(
               tag: 'logo',
               child: Container(
-                height: 200.0,
+                height: 145.0,
                 child: Image.asset('images/logo.png'),
               ),
             ),
@@ -33,6 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             //Email
             TextField(
+              keyboardType: TextInputType
+                  .emailAddress, //display specialty keyboard for entering email address
               onChanged: (value) {
                 //Do something with the user input.
               },
@@ -45,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             //Password
             TextField(
+              obscureText: true, //hide the values that the user enters
               onChanged: (value) {
                 //Do something with the user input.
               },
