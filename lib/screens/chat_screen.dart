@@ -28,7 +28,6 @@ class _ChatScreenState extends State<ChatScreen> {
         //if we do have a signed in user
         loggedInUser = user;
         //save the [logged in] user to the loggedInUser variable
-        print(loggedInUser.email);
       }
     } catch (e) {
       print(e);
@@ -45,6 +44,8 @@ class _ChatScreenState extends State<ChatScreen> {
               icon: Icon(Icons.close),
               onPressed: () {
                 //Implement logout functionality
+                _auth.signOut();
+                Navigator.pop(context);
               }),
         ],
         title: Text('⚡️Chat'),

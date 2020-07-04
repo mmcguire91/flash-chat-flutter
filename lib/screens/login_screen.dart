@@ -2,6 +2,8 @@ import 'package:flash_chat/constants.dart';
 import 'package:flash_chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import '../components/rounded_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_awesome_alert_box/flutter_awesome_alert_box.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
@@ -11,6 +13,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _auth = FirebaseAuth.instance;
+  String email;
+  String password;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
               keyboardType: TextInputType
                   .emailAddress, //display specialty keyboard for entering email address
               onChanged: (value) {
-                //Do something with the user input.
+                email = value;
               },
               decoration: kTextFieldDecoration.copyWith(
                 hintText: 'Email',
@@ -49,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextField(
               obscureText: true, //hide the values that the user enters
               onChanged: (value) {
-                //Do something with the user input.
+                password = value;
               },
               decoration: kTextFieldDecoration.copyWith(
                 hintText: 'Password',
@@ -61,9 +66,22 @@ class _LoginScreenState extends State<LoginScreen> {
             RoundedButton(
               buttonColor: Colors.lightBlueAccent,
               buttonText: 'Login',
-              onPressed: () {
-                //Implement login functionality.
-                Navigator.pushNamed(context, ChatScreen.id);
+              onPressed: () async {
+                try {
+                  final user = await _auth.signInWithEmailAndPassword(
+                      email: email.trim(), password: password);
+                  if (user != null) {
+                    Navigator.pushNamed(context, ChatScreen.id);
+                    //if the newUser value is not empty proceed to the chat view
+                  }
+                } catch (e) {
+                  print(e);
+                  WarningAlertBoxCenter(
+                    context: context,
+                    messageText:
+                        'Something went wrong. Password must be at least 6 characters',
+                  );
+                }
               },
             ),
           ],

@@ -79,7 +79,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   if (newUser != null) {
                     Navigator.pushNamed(context, ChatScreen.id);
                     //if the newUser value is not empty proceed to the chat view
-                  } else if (password = null) {}
+                  }
                 } catch (e) {
                   print(e);
                   WarningAlertBoxCenter(
@@ -87,6 +87,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     messageText:
                         'Something went wrong. Password must be at least 6 characters',
                   );
+                  //trigger warning box to alert user that something went wrong if authentication fails
                 }
               },
             ),
