@@ -61,9 +61,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               TextField(
                 obscureText: true, //hide the values that the user enters
                 onChanged: (value) {
-                  //Do something with the user input.
-                  password =
-                      value; //store the entry value of the password field as the variable password
+                  password = value;
+                  //store the entry value of the password field as the variable password
                 },
                 decoration: kTextFieldDecoration.copyWith(
                   hintText: 'Password',
