@@ -37,6 +37,18 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void messagesStream() async {
+    //stream listens & subscribes to the latest data housed in the firebase console and pushes when something new is added
+    await for (var snapshot in _firestore.collection('messages').snapshots()) {
+      //await the latest data added to the messages collection in firebase
+      for (var message in snapshot.documents) {
+        //save var message as the data collected and regularly pushed from firebase from documents added within the messages collection
+        print(message.data);
+        //print the data housed within each document (sender, text)
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
