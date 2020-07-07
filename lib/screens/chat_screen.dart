@@ -44,7 +44,7 @@ class _ChatScreenState extends State<ChatScreen> {
       for (var message in snapshot.documents) {
         //save var message as the data collected and regularly pushed from firebase from documents added within the messages collection
         print(message.data);
-        //print the data housed within each document (sender, text)
+        //print out all the data housed within messages collection: messages / documents / fields (sender, text)
       }
     }
   }
