@@ -81,6 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         'text': messageText,
                         'sender': loggedInUser.email,
                       });
+                      //log the information and values according to those established within Firebase
                       //retrieved from database collection and fields established in Firebase
                     },
                     child: Text(
