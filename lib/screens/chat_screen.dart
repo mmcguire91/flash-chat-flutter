@@ -72,6 +72,43 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            StreamBuilder<QuerySnapshot>(
+              //StreamBuilder establishes the Stream of data pushed from Firebase console
+              //QuerySnapshot is the data type requested from the firebase console --> Querying a snapshot of the data housed in Firebase
+              stream: _firestore.collection('messages').snapshots(),
+              //the source of the stream should consist of the messages collection. Snapshots() performs the queries of the location to determine if there is anything new to push
+              builder: (context, snapshot) {
+                //build the stream to consist of the context and the snapshot query of the stream
+                if (!snapshot.hasData) {
+                  //if the snapshot query returns null
+                  return Center(
+                    child: CircularProgressIndicator(),
+                    //then display the circular progress indicator
+                  );
+                }
+                final messages = snapshot.data.documents;
+                //store in the messages variable the query of the latest data [documents] posted to Firebase
+                List<Text> messageWidgets = [];
+                //establish a list (messageWidgets) to store the contents of the documents
+                for (var message in messages) {
+                  //build for in loops to retrieve the data in messages storing to the variable message to call the data of each field within a document in the messages collection
+                  final messageText = message.data['text'];
+                  //retrieve the data stored in the text field and save to the variable messageText
+                  final messageSender = message.data['sender'];
+                  //retrieve the data stored in the sender field and save to the variable messageSender
+
+                  final messageWidget =
+                      Text('$messageText from $messageSender');
+                  //store the data retrieved from the data stored in the messageText and messageSender variables within the messageWidget variable
+                  messageWidgets.add(messageWidget);
+                  //add each document data (messageWidget) retrieved and add it to the List messageWidgets
+                }
+                return Column(
+                  children: messageWidgets,
+                  //return the data stored in messageWidgets
+                );
+              },
+            ),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
