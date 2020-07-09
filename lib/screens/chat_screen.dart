@@ -3,6 +3,8 @@ import 'package:flash_chat/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+final _firestore = Firestore.instance;
+
 class ChatScreen extends StatefulWidget {
   static const String id = 'chat_screen';
 
@@ -11,7 +13,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final _firestore = Firestore.instance;
+  final messageTextController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   FirebaseUser loggedInUser;
   String messageText;
@@ -72,43 +74,7 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            StreamBuilder<QuerySnapshot>(
-              //StreamBuilder establishes the Stream of data pushed from Firebase console
-              //QuerySnapshot is the data type requested from the firebase console --> Querying a snapshot of the data housed in Firebase
-              stream: _firestore.collection('messages').snapshots(),
-              //the source of the stream should consist of the messages collection. Snapshots() performs the queries of the location to determine if there is anything new to push
-              builder: (context, snapshot) {
-                //build the stream to consist of the context and the snapshot query of the stream
-                if (!snapshot.hasData) {
-                  //if the snapshot query returns null
-                  return Center(
-                    child: CircularProgressIndicator(),
-                    //then display the circular progress indicator
-                  );
-                }
-                final messages = snapshot.data.documents;
-                //store in the messages variable the query of the latest data [documents] posted to Firebase
-                List<Text> messageWidgets = [];
-                //establish a list (messageWidgets) to store the contents of the documents
-                for (var message in messages) {
-                  //build for in loops to retrieve the data in messages storing to the variable message to call the data of each field within a document in the messages collection
-                  final messageText = message.data['text'];
-                  //retrieve the data stored in the text field and save to the variable messageText
-                  final messageSender = message.data['sender'];
-                  //retrieve the data stored in the sender field and save to the variable messageSender
-
-                  final messageWidget =
-                      Text('$messageText from $messageSender');
-                  //store the data retrieved from the data stored in the messageText and messageSender variables within the messageWidget variable
-                  messageWidgets.add(messageWidget);
-                  //add each document data (messageWidget) retrieved and add it to the List messageWidgets
-                }
-                return Column(
-                  children: messageWidgets,
-                  //return the data stored in messageWidgets
-                );
-              },
-            ),
+            MessagesStream(),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
@@ -116,6 +82,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: <Widget>[
                   Expanded(
                     child: TextField(
+                      controller: messageTextController,
                       onChanged: (value) {
                         messageText = value;
                         //store the entry value of the text entry field as the variable messageText
@@ -125,7 +92,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   FlatButton(
                     onPressed: () {
-                      //messageTex + loggedInUser.email
+                      messageTextController.clear();
+                      //clear the text field on button press
                       _firestore.collection('messages').add({
                         'text': messageText,
                         'sender': loggedInUser.email,
@@ -143,6 +111,100 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class MessagesStream extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      //StreamBuilder establishes the Stream of data pushed from Firebase console
+      //QuerySnapshot is the data type requested from the firebase console --> Querying a snapshot of the data housed in Firebase
+
+      stream: _firestore.collection('messages').snapshots(),
+      //the source of the stream should consist of the messages collection. Snapshots() performs the queries of the location to determine if there is anything new to push
+
+      builder: (context, snapshot) {
+        //build the stream to consist of the context and the snapshot query of the stream
+
+        if (!snapshot.hasData) {
+          //if the snapshot query returns null
+
+          return Center(
+            child: CircularProgressIndicator(),
+            //then display the circular progress indicator
+          );
+        }
+        final messages = snapshot.data.documents;
+        //store in the messages variable the query of the latest data [documents] posted to Firebase
+
+        List<MessageBubble> messageBubbles = [];
+        //establish a list (messageWidgets) to store the contents of the documents
+
+        for (var message in messages) {
+          //build for in loops to retrieve the data in messages storing to the variable message to call the data of each field within a document in the messages collection
+
+          final messageText = message.data['text'];
+          //retrieve the data stored in the text field and save to the variable messageText
+          final messageSender = message.data['sender'];
+          //retrieve the data stored in the sender field and save to the variable messageSender
+
+          final messageBubble = MessageBubble(
+            sender: messageSender,
+            text: messageText,
+          );
+          //display the data retrieved from the data stored in the messageText and messageSender variables within the text and sender properties esatablished in the MessageBubble widget
+
+          messageBubbles.add(messageBubble);
+          //add each document data (messageWidget) retrieved and add it to the List messageWidgets
+        }
+        return Expanded(
+          //Expanded - limit to available space
+          child: ListView(
+            //make the area where this content is housed scrollable
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+            children: messageBubbles,
+            //return the data stored in messageWidgets
+          ),
+        );
+      },
+    );
+  }
+}
+
+class MessageBubble extends StatelessWidget {
+  MessageBubble({this.sender, this.text});
+
+  final String sender;
+  final String text;
+  //establish sender and text properties to further clarify where the data housed in the messageText and messageSender variables will be displayed
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Text(
+            sender,
+            style: TextStyle(color: Colors.black54),
+          ),
+          Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.circular(30.0),
+            color: Colors.lightBlueAccent,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+              child: Text(
+                text,
+                style: TextStyle(fontSize: 15.0, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
