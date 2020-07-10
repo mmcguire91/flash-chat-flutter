@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 final _firestore = Firestore.instance;
+FirebaseUser loggedInUser;
 
 class ChatScreen extends StatefulWidget {
   static const String id = 'chat_screen';
@@ -15,7 +16,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  FirebaseUser loggedInUser;
+
   String messageText;
 
   @override
@@ -36,18 +37,6 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     } catch (e) {
       print(e);
-    }
-  }
-
-  void messagesStream() async {
-    //stream listens & subscribes to the latest data housed in the firebase console and pushes when something new is added
-    await for (var snapshot in _firestore.collection('messages').snapshots()) {
-      //await the latest data added to the messages collection in firebase
-      for (var message in snapshot.documents) {
-        //save var message as the data collected and regularly pushed from firebase from documents added within the messages collection
-        print(message.data);
-        //print out all the data housed within messages collection: messages / documents / fields (sender, text)
-      }
     }
   }
 
@@ -137,7 +126,7 @@ class MessagesStream extends StatelessWidget {
             //then display the circular progress indicator
           );
         }
-        final messages = snapshot.data.documents;
+        final messages = snapshot.data.documents.reversed;
         //store in the messages variable the query of the latest data [documents] posted to Firebase
 
         List<MessageBubble> messageBubbles = [];
@@ -151,9 +140,12 @@ class MessagesStream extends StatelessWidget {
           final messageSender = message.data['sender'];
           //retrieve the data stored in the sender field and save to the variable messageSender
 
+          final currentUser = loggedInUser.email;
+
           final messageBubble = MessageBubble(
             sender: messageSender,
             text: messageText,
+            isMe: currentUser == messageSender,
           );
           //display the data retrieved from the data stored in the messageText and messageSender variables within the text and sender properties esatablished in the MessageBubble widget
 
@@ -164,6 +156,7 @@ class MessagesStream extends StatelessWidget {
           //Expanded - limit to available space
           child: ListView(
             //make the area where this content is housed scrollable
+            reverse: true,
             padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
             children: messageBubbles,
             //return the data stored in messageWidgets
@@ -175,18 +168,25 @@ class MessagesStream extends StatelessWidget {
 }
 
 class MessageBubble extends StatelessWidget {
-  MessageBubble({this.sender, this.text});
+  MessageBubble({
+    this.sender,
+    this.text,
+    this.isMe,
+  });
 
   final String sender;
   final String text;
   //establish sender and text properties to further clarify where the data housed in the messageText and messageSender variables will be displayed
+  final bool isMe;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        //if I am the logged in user that sent the message display the text bubble on the right, otherwise display on the left
         children: <Widget>[
           Text(
             sender,
@@ -194,13 +194,29 @@ class MessageBubble extends StatelessWidget {
           ),
           Material(
             elevation: 5.0,
-            borderRadius: BorderRadius.circular(30.0),
-            color: Colors.lightBlueAccent,
+            borderRadius: isMe
+                ? BorderRadius.only(
+                    topLeft: Radius.circular(30.0),
+                    bottomLeft: Radius.circular(30.0),
+                    bottomRight: Radius.circular(30.0),
+                  )
+                : BorderRadius.only(
+                    topRight: Radius.circular(30.0),
+                    bottomLeft: Radius.circular(30.0),
+                    bottomRight: Radius.circular(30.0),
+                  ),
+            //change the orientation of the border radius
+            color: isMe ? Colors.lightBlueAccent : Colors.white,
+            //if I am the logged in user that sent the message display the text bubble in light blue, otherwise display in white
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
               child: Text(
                 text,
-                style: TextStyle(fontSize: 15.0, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 15.0,
+                  color: isMe ? Colors.white : Colors.black,
+                  //if I am the logged in user that sent the message display the text in white, otherwise display in black
+                ),
               ),
             ),
           ),
