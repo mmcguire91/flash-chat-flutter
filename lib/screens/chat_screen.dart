@@ -86,6 +86,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       _firestore.collection('messages').add({
                         'text': messageText,
                         'sender': loggedInUser.email,
+                        'timestamp': Timestamp.now()
+                        //add timestamp property to each message in order to display messages in chronological order
                       });
                       //log the information and values according to those established within Firebase
                       //retrieved from database collection and fields established in Firebase
@@ -112,7 +114,11 @@ class MessagesStream extends StatelessWidget {
       //StreamBuilder establishes the Stream of data pushed from Firebase console
       //QuerySnapshot is the data type requested from the firebase console --> Querying a snapshot of the data housed in Firebase
 
-      stream: _firestore.collection('messages').snapshots(),
+      stream: _firestore
+          .collection('messages')
+          .orderBy('timestamp',
+              descending: true) //display in chronological order
+          .snapshots(),
       //the source of the stream should consist of the messages collection. Snapshots() performs the queries of the location to determine if there is anything new to push
 
       builder: (context, snapshot) {
@@ -126,7 +132,7 @@ class MessagesStream extends StatelessWidget {
             //then display the circular progress indicator
           );
         }
-        final messages = snapshot.data.documents.reversed;
+        final messages = snapshot.data.documents;
         //store in the messages variable the query of the latest data [documents] posted to Firebase
 
         List<MessageBubble> messageBubbles = [];
