@@ -3,6 +3,24 @@ import 'package:flash_chat/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+//TODO: Still todo as a bonus would be the implementation of Push Notifications
+/*to install push notifications use 1) Firebase Cloud Messaging 2) Firebase Functions
+RESOURCES:
+
+FIREBASE CLOUD MESSAGING DOCUMENTATION - PUB.DEV
+https://pub.dev/packages/firebase_messaging#-readme-tab-
+
+PUSH NOTIFICATIONS IN FLUTTER | FIREBASE - FLUTTER DEVS
+https://medium.com/flutterdevs/push-notification-in-flutter-firebase-127289de5dd4
+
+FCM PUSH NOTIFICATIONS FOR FLUTTER - FIRESHIP.IO
+https://fireship.io/lessons/flutter-push-notifications-fcm-guide/
+
+PUSH NOTIFICATIONS IN FLUTTER USING FIREBASE - FILLED STACKS
+https://medium.com/flutter-community/push-notifications-in-flutter-using-firebase-c1ebaf45d62f
+https://www.filledstacks.com/post/push-notifications-in-flutter-using-firebase/
+ */
+
 final _firestore = Firestore.instance;
 FirebaseUser loggedInUser;
 
